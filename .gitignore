@@ -34,3 +34,19 @@ target/
 # system ignore
 .DS_Store
 Thumbs.db
+
+
+
+
+#git status 查看当前文件的变化
+#git add .
+#git commit -am 'zhushi' 提交到本地仓库
+#git remote add origin URL 连接远处仓库
+#git branch 查看分支
+#git pull
+#git push -u origin v1.0 提交到远处仓库
+
+
+#git init 初始化
+#git checkout -b v1.0 origin/master 创建v1.0分支
+#git push origin HEAD -u 将创建的分支提交到远程
