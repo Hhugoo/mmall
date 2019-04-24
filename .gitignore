@@ -45,7 +45,7 @@ Thumbs.db
 # git pull
 # git push -u origin v1.0 提交到远处仓库
 
-
+####
 # git init 初始化
 # git checkout -b v1.0 origin/master 创建v1.0分支
 # git push origin HEAD -u 将创建的分支提交到远程
