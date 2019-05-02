@@ -38,6 +38,7 @@ Thumbs.db
 
 
 # git status 查看当前文件的变化
+# git push
 # git add .
 # git commit -am 'zhushi' 提交到本地仓库
 # git remote add origin URL 连接远处仓库
@@ -49,3 +50,7 @@ Thumbs.db
 # git init 初始化
 # git checkout -b v1.0 origin/master 创建v1.0分支
 # git push origin HEAD -u 将创建的分支提交到远程
+
+####在v1.0的基础上创建出v2.0
+# git checkout -b v2.0 origin/v1.0
+# git push origin HEAD -u
