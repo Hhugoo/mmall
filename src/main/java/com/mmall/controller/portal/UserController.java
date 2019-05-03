@@ -32,6 +32,7 @@ public class UserController {
     @RequestMapping(value = "login.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<User> login(String username, String password, HttpSession session, HttpServletResponse httpServletResponse) {
+       // User user = (User)session.getAttribute(Const.CURRENT_USER);
 
         ServerResponse<User> response = iUserService.login(username, password);
         if(response.isSuccess()){
@@ -43,7 +44,7 @@ public class UserController {
 
     @RequestMapping(value = "logout.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> logout(HttpSession session, HttpServletRequest request, HttpServletResponse response) {
+    public ServerResponse<String> logout(HttpServletRequest request, HttpServletResponse response) {
         String loginToken = CookieUtil.readLoginToken(request);
         CookieUtil.delLoginToken(request, response);
         RedisPoolUtil.del(loginToken);
@@ -97,8 +98,13 @@ public class UserController {
 
     @RequestMapping(value = "reset_password.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> resetPassword(HttpSession session, String passwordOld, String passwordNew) {
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+    public ServerResponse<String> resetPassword(HttpServletRequest httpServletRequest, String passwordOld, String passwordNew) {
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        if (StringUtils.isEmpty(loginToken)) {
+            return ServerResponse.createByErrorMessage("用户未登陆，无法获取当前用户的信息！");
+        }
+        String userString = RedisPoolUtil.get(loginToken);
+        User user = JsonUtil.stringToObj(userString, User.class);
         if(user == null) {
             return ServerResponse.createByErrorMessage("用户未登陆");
         }
@@ -109,8 +115,14 @@ public class UserController {
 
     @RequestMapping(value = "update_information.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> update_information(HttpSession session, User user) {
-        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+    public ServerResponse<User> update_information(HttpServletRequest httpServletRequest, User user) {
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        if (StringUtils.isEmpty(loginToken)) {
+            return ServerResponse.createByErrorMessage("用户未登陆，无法获取当前用户的信息！");
+        }
+        String userString = RedisPoolUtil.get(loginToken);
+        User currentUser = JsonUtil.stringToObj(userString, User.class);
+
         if(currentUser == null) {
             return ServerResponse.createByErrorMessage("用户未登陆");
         }
@@ -119,15 +131,21 @@ public class UserController {
         ServerResponse<User> response = iUserService.updateInformation(user);
         if(response.isSuccess()) {
             response.getData().setUsername(currentUser.getUsername());
-            session.setAttribute(Const.CURRENT_USER, response.getData());
+            RedisPoolUtil.setEx(loginToken, JsonUtil.objToString(response.getData()), Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
         }
         return response;
     }
 
     @RequestMapping(value = "get_information.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> get_information(HttpSession session) {
-        User currentuser = (User) session.getAttribute(Const.CURRENT_USER);
+    public ServerResponse<User> get_information(HttpServletRequest httpServletRequest) {
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        if (StringUtils.isEmpty(loginToken)) {
+            return ServerResponse.createByErrorMessage("用户未登陆，无法获取当前用户的信息！");
+        }
+        String userString = RedisPoolUtil.get(loginToken);
+        User currentuser = JsonUtil.stringToObj(userString, User.class);
+
         if(currentuser == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),
                     "未登陆，需要强制登陆"+ResponseCode.ILLEGAL_ARGUMENT.getCode());
