@@ -41,7 +41,7 @@ public class CloseOrderTask {
         RedisShardedPoolUtil.expire(lockName, 50);
         log.info("获得:{}, ThreadName:{}", Const.REDIS_LOCK.CLOSE_ORDER_TASK_LOCK, Thread.currentThread());
         int hour = Integer.parseInt(PropertiesUtil.getProperty("close.order.task.time.hour", "2"));
-        iOrderService.closeOrder(hour);
+//        iOrderService.closeOrder(hour);
         RedisShardedPoolUtil.del(lockName);
         log.info("获得:{}, ThreadName:{}", Const.REDIS_LOCK.CLOSE_ORDER_TASK_LOCK, Thread.currentThread());
         log.info("============================");
