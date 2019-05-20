@@ -9,6 +9,7 @@ import redis.clients.jedis.ShardedJedis;
 @Slf4j
 public class RedisShardedPoolUtil {
 
+    //返回ok
     public static String set(String key, String value) {
         ShardedJedis jedis = null;
         String result = null;
@@ -88,6 +89,23 @@ public class RedisShardedPoolUtil {
             return result;
         }
         RedisShardedPool.returnResource(jedis);
+        return result;
+    }
+
+    // 只有当key不存在时，才能set成功（先判断存不存在，然后再set）返回1或0
+    public static Long setnx(String key, String value) {
+        Jedis jedis = null;
+        Long result = null;
+
+        try {
+            jedis = RedisPool.getJedis();
+            result = jedis.setnx(key, value);
+        } catch (Exception e) {
+            log.error("setnx key:{} value:{} error", key, value, e);
+            RedisPool.returnBrokenResource(jedis);
+            return result;
+        }
+        RedisPool.returnResource(jedis);
         return result;
     }
 

@@ -9,6 +9,7 @@ import redis.clients.jedis.ShardedJedis;
 @Slf4j
 public class RedisPoolUtil {
 
+
     public static String set(String key, String value) {
         Jedis jedis = null;
         String result = null;
