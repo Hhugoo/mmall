@@ -94,18 +94,18 @@ public class RedisShardedPoolUtil {
 
     // 只有当key不存在时，才能set成功（先判断存不存在，然后再set）返回1或0
     public static Long setnx(String key, String value) {
-        Jedis jedis = null;
+        ShardedJedis jedis = null;
         Long result = null;
 
         try {
-            jedis = RedisPool.getJedis();
+            jedis = RedisShardedPool.getJedis();
             result = jedis.setnx(key, value);
         } catch (Exception e) {
             log.error("setnx key:{} value:{} error", key, value, e);
-            RedisPool.returnBrokenResource(jedis);
+            RedisShardedPool.returnBrokenResource(jedis);
             return result;
         }
-        RedisPool.returnResource(jedis);
+        RedisShardedPool.returnResource(jedis);
         return result;
     }
 
