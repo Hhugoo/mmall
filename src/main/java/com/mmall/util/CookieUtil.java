@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 public class CookieUtil {
 
-    private final static String COOKIE_DOMAIN = ".ztt.com";
-    private final static String COOKIE_NAME = "mmall_login_token";
+    private final static String COOKIE_DOMAIN = "http://127.0.0.1";
+    private final static String COOKIE_NAME = "JSESSIONID";
 
     public static String readLoginToken(HttpServletRequest request) {
         Cookie[] cks = request.getCookies();

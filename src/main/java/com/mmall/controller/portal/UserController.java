@@ -77,7 +77,7 @@ public class UserController {
         if(user != null) {
             return ServerResponse.createBySuccess(user);
         }
-        return ServerResponse.createByErrorMessage("用户未登陆，无法获取当前用户的信息！");
+        return ServerResponse.createByErrorMessage("用户未登陆，无法获取当前用户的信息！!!");
     }
 
     @RequestMapping(value = "forget_get_question.do", method = RequestMethod.POST)

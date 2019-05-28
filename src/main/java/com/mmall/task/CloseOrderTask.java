@@ -34,7 +34,7 @@ public class CloseOrderTask {
         } else {
             log.info("没有获得分布式锁:{}", Const.REDIS_LOCK.CLOSE_ORDER_TASK_LOCK);
         }
-        log.info("关闭订单定时任务结束");
+        log.info("关闭订单定时任务结束～xixixi嘻嘻");
     }
 
     private void closeOrder(String lockName) {
@@ -47,6 +47,10 @@ public class CloseOrderTask {
         log.info("============================");
     }
 
+
+    public static void main(String[] args) {
+        System.out.println("呜呜呜");
+    }
 
 
 }
