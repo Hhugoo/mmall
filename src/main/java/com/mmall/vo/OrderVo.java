@@ -5,7 +5,7 @@ import java.util.List;
 
 public class OrderVo {
 
-    private Long orderNO;
+    private Long orderNo;
     private BigDecimal payment;
     private Integer paymentType;
     private String paymentTypeDesc;
@@ -28,12 +28,12 @@ public class OrderVo {
 
     private ShippingVo shippingVo;
 
-    public Long getOrderNO() {
-        return orderNO;
+    public Long getOrderNo() {
+        return orderNo;
     }
 
-    public void setOrderNO(Long orderNO) {
-        this.orderNO = orderNO;
+    public void setOrderNo(Long orderNo) {
+        this.orderNo = orderNo;
     }
 
     public BigDecimal getPayment() {

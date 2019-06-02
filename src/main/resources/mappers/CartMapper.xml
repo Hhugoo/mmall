@@ -169,7 +169,7 @@
 
   <select id="selectCartProductCount" parameterType="int" resultType="java.lang.Integer">
     SELECT
-    NULLIF (sum(quantity), 0) as count
+    IFNULL (sum(quantity), 0) as count
     from mmall_cart
     where user_id = #{userId}
   </select>

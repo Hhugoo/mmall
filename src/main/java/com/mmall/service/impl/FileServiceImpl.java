@@ -20,7 +20,7 @@ public class FileServiceImpl implements IFileService {
     public String upload(MultipartFile file, String path) {
         String fileName  = file.getOriginalFilename(); // 获取上传时文件的文件名
 
-        String fileExtensionName = fileName.substring(fileName.lastIndexOf("."+1));
+        String fileExtensionName = fileName.substring(fileName.lastIndexOf(".")+1);
         String uploadFileName = UUID.randomUUID().toString() + "." + fileExtensionName;
         logger.info("开始上传文件，上传文件的文件名:{}, 上传的路径:{}, 新文件名:{}", fileName, path, uploadFileName);
 
