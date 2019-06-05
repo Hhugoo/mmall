@@ -1,12 +1,17 @@
 package com.mmall.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import com.mmall.common.Const;
 import com.mmall.common.ServerResponse;
 import com.mmall.common.TokenCache;
 import com.mmall.dao.UserMapper;
 import com.mmall.pojo.User;
 import com.mmall.service.IUserService;
+import com.mmall.util.DateTimeUtil;
 import com.mmall.util.MD5Util;
+import com.mmall.vo.UserVo;
 import net.sf.jsqlparser.schema.Server;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +19,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.jws.soap.SOAPBinding;
+import java.util.List;
 import java.util.UUID;
 
 @Service("iUserService")
@@ -183,6 +189,43 @@ public class UserServiceImpl implements IUserService{
             return ServerResponse.createBySuccess();
         }
         return ServerResponse.createByError();
+    }
+
+    public ServerResponse<PageInfo> getUserList(int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<User> userList = userMapper.getUserList();
+        List<UserVo> userVoList = this.assembleUserVoList(userList);
+        PageInfo pageInfo = new PageInfo(userList);
+        pageInfo.setList(userVoList);
+        return ServerResponse.createBySuccess(pageInfo);
+    }
+
+    private List<UserVo> assembleUserVoList(List<User> userList) {
+        List<UserVo> userVoList = Lists.newArrayList();
+        for(User user : userList) {
+            UserVo userVo = new UserVo();
+            userVo.setId(user.getId());
+            userVo.setUsername(user.getUsername());
+            userVo.setPhone(this.fixPhone(user.getPhone()));
+            userVo.setEmail(user.getEmail());
+            userVo.setCreateTime(DateTimeUtil.dateToStr(user.getCreateTime()));
+            userVoList.add(userVo);
+        }
+        return userVoList;
+    }
+
+    //  隐藏电话号码的中间四位
+    private String fixPhone(String phone) {
+        StringBuffer phoneFixed = new StringBuffer();
+        //默认电话号码为标准的11位
+        for (int i=0; i<11; i++) {
+            if (i == 3 || i == 4 || i == 5 || i == 6) {
+                phoneFixed.append("*");
+            } else {
+                phoneFixed.append(phone.charAt(i));
+            }
+        }
+        return phoneFixed.toString();
     }
 
 }

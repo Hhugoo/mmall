@@ -56,8 +56,9 @@ public class FTPUtil {
                 fis.close();
                 ftpClient.disconnect();
             }
-
+            System.out.println("*******************");
         }
+        System.out.println(uploaded+"****");
         return uploaded;
     }
 

@@ -24,10 +24,12 @@
   </filter-mapping>
 
 
+  <!--监听web容器启动和关闭-->
   <listener>
     <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
   </listener>
 
+  <!--将web容器和spring容器进行整合的监听器-->
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
@@ -38,9 +40,14 @@
     </param-value>
   </context-param>
 
+  <!--配置springmvc-->
   <servlet>
     <servlet-name>dispatcher</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <!--<init-param>-->
+      <!--<param-name>contextConfigLocation</param-name>-->
+      <!--<param-value>/WEB-INF/xxxx</param-value>-->
+    <!--</init-param>-->
     <load-on-startup>1</load-on-startup>
   </servlet>
 

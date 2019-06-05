@@ -208,4 +208,10 @@
     and id != #{userId}
   </select>
 
+  <select id="getUserList" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    from mmall_user
+  </select>
+
 </mapper>
