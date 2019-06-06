@@ -220,4 +220,10 @@ public class ProductServiceImpl implements IProductService {
         return ServerResponse.createBySuccess(pageInfo);
     }
 
+    public ServerResponse<Integer> getProductNumber() {
+
+        int productNumber = productMapper.getProductNumber();
+
+        return ServerResponse.createBySuccess(productNumber);
+    }
 }

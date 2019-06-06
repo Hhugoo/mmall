@@ -36,4 +36,6 @@ public interface IOrderService {
 
     ServerResponse<String> manageSendGoods(Long orderNo);
 
+    ServerResponse<Integer> getOrderNumber();
+
 }

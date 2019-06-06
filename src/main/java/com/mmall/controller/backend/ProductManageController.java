@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -164,6 +165,20 @@ public class  ProductManageController {
             resultMap.put("success", false);
             resultMap.put("msg","无权限操作");
             return resultMap;
+        }
+    }
+
+    @RequestMapping(value="number.do", method= RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Integer> number(HttpSession session) {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if(user == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "请登陆！");
+        }
+        if(iUserService.checkAdminRole(user).isSuccess()) {
+            return iProductService.getProductNumber();
+        }else {
+            return ServerResponse.createByErrorMessage("非管理员登陆，无操作权限");
         }
     }
 

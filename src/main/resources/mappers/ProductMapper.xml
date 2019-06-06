@@ -214,4 +214,10 @@
     </if>
   </select>
 
+  <select id="getProductNumber" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1)
+    FROM mmall_product
+  </select>
+
 </mapper>

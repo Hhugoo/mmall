@@ -214,4 +214,10 @@
     from mmall_user
   </select>
 
+  <select id="getUserNumber" resultType="java.lang.Integer">
+    SELECT
+    count(1)
+    from mmall_user
+  </select>
+
 </mapper>

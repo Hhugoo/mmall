@@ -547,6 +547,13 @@ public class OrderServiceImpl implements IOrderService {
         return ServerResponse.createByErrorMessage("订单不存在");
     }
 
+    public ServerResponse<Integer> getOrderNumber() {
+
+        int orderNumber = orderMapper.getOrderNumber();
+
+        return ServerResponse.createBySuccess(orderNumber);
+    }
+
 
 
 

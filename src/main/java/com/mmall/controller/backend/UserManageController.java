@@ -54,4 +54,18 @@ public class UserManageController {
         }
     }
 
+    @RequestMapping(value="number.do", method= RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Integer> number(HttpSession session) {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if(user == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "请登陆！");
+        }
+        if(iUserService.checkAdminRole(user).isSuccess()) {
+            return iUserService.getUserNumber();
+        }else {
+            return ServerResponse.createByErrorMessage("非管理员登陆，无操作权限");
+        }
+    }
+
 }

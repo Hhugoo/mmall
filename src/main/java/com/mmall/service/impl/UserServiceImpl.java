@@ -228,4 +228,11 @@ public class UserServiceImpl implements IUserService{
         return phoneFixed.toString();
     }
 
+    public ServerResponse<Integer> getUserNumber() {
+
+        int userNumber = userMapper.getUserNumber();
+
+        return ServerResponse.createBySuccess(userNumber);
+    }
+
 }

@@ -229,4 +229,10 @@
     ORDER BY create_time desc
   </select>
 
+  <select id="getOrderNumber" resultType="java.lang.Integer">
+    SELECT
+    count(1)
+    FROM mmall_order
+  </select>
+
 </mapper>
