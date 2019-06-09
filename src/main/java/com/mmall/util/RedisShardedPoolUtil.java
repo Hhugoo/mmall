@@ -109,4 +109,21 @@ public class RedisShardedPoolUtil {
         return result;
     }
 
+    // 如果有旧值，就返回旧值，如果没有，就返回nil（null）
+    public static String getSet(String key, String value) {
+        ShardedJedis jedis = null;
+        String result = null;
+
+        try {
+            jedis = RedisShardedPool.getJedis();
+            result = jedis.getSet(key, value);
+        } catch (Exception e) {
+            log.error("getSet key:{} error", key, e);
+            RedisShardedPool.returnBrokenResource(jedis);
+            return result;
+        }
+        RedisShardedPool.returnResource(jedis);
+        return result;
+    }
+
 }

@@ -52,8 +52,8 @@ public class Const {
     }
 
     public enum OrderStatusEnum {
-        CANCELED(0, "未支付"),
-        NO_PAY(10, "已取消"),
+        CANCELED(0, "已取消"),
+        NO_PAY(10, "未支付"),
         PAID(20, "已付款"),
         SHIPPED(40, "已发货"),
         ORDER_SUCCESS(50, "订单完成"),

@@ -1,8 +1,9 @@
 package BaiduAI.test;
 
 import java.util.Scanner;
+import java.util.ArrayList;
 
-public class PasswdTest {
+public class PasswdTest{
 
         /**
          * @param args
