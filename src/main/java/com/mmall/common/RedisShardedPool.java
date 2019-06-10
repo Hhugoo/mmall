@@ -18,10 +18,10 @@ public class RedisShardedPool {
     private static Boolean testOnReturn = Boolean.parseBoolean(PropertiesUtil.getProperty("redis.test.return", "true")); // 在return一个jedis实例的时候，是否要进行验证操作，如果赋值true，则放回jedispool的jedis的实例是一定可以用的
 
     private static String redis1Ip = PropertiesUtil.getProperty("redis1.ip");
-    private static Integer redis1Port = Integer.parseInt(PropertiesUtil.getProperty("redis1.port")); // 在jedispool中最小的idle（空闲的）状态的jedis实例的个数
+    private static Integer redis1Port = Integer.parseInt(PropertiesUtil.getProperty("redis1.port"));
 
     private static String redis2Ip = PropertiesUtil.getProperty("redis2.ip");
-    private static Integer redis2Port = Integer.parseInt(PropertiesUtil.getProperty("redis2.port")); // 在jedispool中最小的idle（空闲的）状态的jedis实例的个数
+    private static Integer redis2Port = Integer.parseInt(PropertiesUtil.getProperty("redis2.port"));
 
     private static void initPool() {
         JedisPoolConfig config = new JedisPoolConfig();
