@@ -124,4 +124,9 @@
     where parent_id = #{parentId}
   </select>
 
+  <select id="selectParentId" resultType="java.lang.Integer" parameterType="int">
+    SELECT parent_id
+    FROM mmall_category
+    WHERE id = #{categoryId}
+  </select>
 </mapper>

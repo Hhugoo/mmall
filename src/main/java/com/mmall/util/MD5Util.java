@@ -48,10 +48,10 @@ public class MD5Util {
     }
 
     public static String MD5EncodeUtf8(String origin) {
-//        origin = origin + PropertiesUtil.getProperty("password.salt", "");
+        origin = origin + PropertiesUtil.getProperty("password.salt", "geelysdafaqj23ou89ZXcj@#$@#$#@KJdjklj;D../dSF.,");
         // 上一句没用，因为识别不到PropertiesUtil
         //TODO
-        origin = origin + "geelysdafaqj23ou89ZXcj@#$@#$#@KJdjklj;D../dSF.,";
+//        origin = origin + "geelysdafaqj23ou89ZXcj@#$@#$#@KJdjklj;D../dSF.,";
         return MD5Encode(origin, "utf-8");
     }
 

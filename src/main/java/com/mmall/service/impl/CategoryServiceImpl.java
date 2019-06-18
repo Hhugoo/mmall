@@ -91,4 +91,8 @@ public class CategoryServiceImpl implements ICategoryService{
         }
         return categorySet;
     }
-}
+    public ServerResponse getParentId(Integer categoryId) {
+        Integer parentId = categoryMapper.selectParentId(categoryId);
+        return ServerResponse.createBySuccess(parentId);
+    }
+    }

@@ -85,4 +85,20 @@ public class CategoryManageController {
         }
     }
 
+    @RequestMapping("get_parent_id.do")
+    @ResponseBody
+    public ServerResponse getParentId(HttpSession session, Integer categoryId) {
+        User user = (User)session.getAttribute(Const.CURRENT_USER);
+        if (user == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "用户未登录，请登录");
+        }
+        //校验
+        if(iUserService.checkAdminRole(user).isSuccess()) {
+            //查询字节点的category信息
+            return iCategoryService.getParentId(categoryId);
+        } else {
+            return ServerResponse.createByErrorMessage("无权限操作，需要管理员权限");
+        }
+    }
+
 }
