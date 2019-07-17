@@ -80,7 +80,9 @@
             <columnOverride column="detail" jdbcType="VARCHAR" />
             <columnOverride column="sub_images" jdbcType="VARCHAR" />
         </table>
-        <table tableName="mmall_user" domainObjectName="User" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <!-- 通过enableCountByExample, enableUpdateByExample, enableDeleteByExample, enableSelectByExample, selectByExampleQueryId等属性可以控制是否生成和使用xxxExample类在查询中替代模型类。 -->
+        <!--<table tableName="mmall_user" domainObjectName="User" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <table tableName="mmall_user" domainObjectName="User" ></table>
 
 
         <!-- geelynote mybatis插件的搭建 -->
