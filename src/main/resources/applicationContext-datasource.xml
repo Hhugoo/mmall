@@ -57,6 +57,7 @@
         <property name="validationQuery" value="SELECT 1 FROM dual"/>
     </bean>
 
+    <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="mapperLocations" value="classpath*:mappers/*Mapper.xml"></property>
@@ -76,6 +77,8 @@
 
     </bean>
 
+    <!--下面两种方法，一种是自动是扫描对应的service类，一种是通过注入sqlsessionFactory的方式来获取一个SqlsessionTemplate-->
+    <!-- DAO接口所在包名，Spring会自动查找其下的类 -->
     <bean name="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.mmall.dao"/>
     </bean>
