@@ -65,9 +65,10 @@ public class ProductServiceImpl implements IProductService {
         if(productId == null || status == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(), ResponseCode.ILLEGAL_ARGUMENT.getDesc());
         }
-        Product product = new Product();
-        product.setId(productId);
-        product.setStatus((status));
+        Product product = Product.builder()
+                .id(productId)
+                .status(status)
+                .build();
 
         int rowCount = productMapper.updateByPrimaryKeySelective(product);
         if(rowCount > 0) {
@@ -89,29 +90,24 @@ public class ProductServiceImpl implements IProductService {
     }
 
     private ProductDetailVo assembleProductDetailVo(Product product) {
-        ProductDetailVo productDetailVo = new ProductDetailVo();
-        productDetailVo.setId(product.getId());
-        productDetailVo.setSubtitle(product.getSubtitle());
-        productDetailVo.setPrice(product.getPrice());
-        productDetailVo.setMainImage(product.getMainImage());
-        productDetailVo.setSubImages(product.getSubImages());
-        productDetailVo.setCategoryId(product.getCategoryId());
-        productDetailVo.setDetail(product.getDetail());
-        productDetailVo.setName(product.getName());
-        productDetailVo.setStatus(product.getStatus());
-        productDetailVo.setStock(product.getStock());
+        ProductDetailVo productDetailVo = ProductDetailVo.builder()
+                .id(product.getId())
+                .subtitle(product.getSubtitle())
+                .price(product.getPrice())
+                .mainImage(product.getMainImage())
+                .subImages(product.getSubImages())
+                .categoryId(product.getCategoryId())
+                .detail(product.getDetail())
+                .name(product.getName())
+                .status(product.getStatus())
+                .stock(product.getStock())
+                .imageHost(PropertiesUtil.getProperty("ftp.server.http.prefix", "ftp://127.0.0.1/"))
+                .createTime(DateTimeUtil.dateToStr(product.getCreateTime()))
+                .updateTime(DateTimeUtil.dateToStr(product.getUpdateTime()))
+                .parentCategoryId(categoryMapper.selectByPrimaryKey(product.getCategoryId()) ==  null ?
+                        0 : categoryMapper.selectByPrimaryKey(product.getCategoryId()).getParentId())
+                .build();
 
-        productDetailVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix", "ftp://127.0.0.1/"));
-
-        Category category = categoryMapper.selectByPrimaryKey(product.getCategoryId());
-        if(category == null) {
-            productDetailVo.setParentCategoryId(0);
-        }else {
-            productDetailVo.setParentCategoryId(category.getParentId());
-        }
-
-        productDetailVo.setCreateTime(DateTimeUtil.dateToStr(product.getCreateTime()));
-        productDetailVo.setUpdateTime(DateTimeUtil.dateToStr(product.getUpdateTime()));
         return productDetailVo;
     }
 
@@ -134,16 +130,16 @@ public class ProductServiceImpl implements IProductService {
     }
 
     private ProductListVo assembleProductListVo(Product product) {
-        ProductListVo productListVo = new ProductListVo();
-
-        productListVo.setId(product.getId());
-        productListVo.setName(product.getName());
-        productListVo.setCategoryId(product.getCategoryId());
-        productListVo.setMainImage(product.getMainImage());
-        productListVo.setPrice(product.getPrice());
-        productListVo.setSubtitle(product.getSubtitle());
-        productListVo.setStatus(product.getStatus());
-        productListVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix", "ftp://127.0.0.1/"));
+        ProductListVo productListVo = ProductListVo.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .categoryId(product.getCategoryId())
+                .mainImage(product.getMainImage())
+                .price(product.getPrice())
+                .subtitle(product.getSubtitle())
+                .status(product.getStatus())
+                .imageHost(PropertiesUtil.getProperty("ftp.server.http.prefix", "ftp://127.0.0.1/"))
+                .build();
 
         return productListVo;
     }
