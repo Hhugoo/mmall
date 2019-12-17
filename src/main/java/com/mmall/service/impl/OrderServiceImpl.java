@@ -28,6 +28,9 @@ import com.mmall.vo.OrderProductVo;
 import com.mmall.vo.OrderVo;
 import com.mmall.vo.ShippingVo;
 import com.sun.corba.se.spi.activation.Server;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -41,9 +44,8 @@ import java.math.BigDecimal;
 import java.util.*;
 
 @Service("iOrderService")
+@Slf4j
 public class OrderServiceImpl implements IOrderService {
-
-    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Autowired
     private OrderMapper orderMapper;
@@ -98,32 +100,30 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     private OrderVo assembleOrderVo(Order order, List<OrderItem> orderItemList) {
-        OrderVo orderVo = new OrderVo();
-        orderVo.setOrderNo(order.getOrderNo());
-        orderVo.setPayment(order.getPayment());
-        orderVo.setPaymentType(order.getPaymentType());
-        orderVo.setPaymentTypeDesc(Const.PaymentTypeEnum.codeOf(order.getPaymentType()).getValue());
+        OrderVo orderVo = OrderVo.builder()
+                .orderNo(order.getOrderNo())
+                .payment(order.getPayment())
+                .paymentType(order.getPaymentType())
+                .paymentTypeDesc(Const.PaymentTypeEnum.codeOf(order.getPaymentType()).getValue())
+                .postage(order.getPostage())
+                .status(order.getStatus())
+                .statusDesc(Const.OrderStatusEnum.codeOf(order.getStatus()).getValue())
+                .shippingId(order.getShippingId())
+                .paymentTime(DateTimeUtil.dateToStr(order.getPaymentTime()))
+                .sendTime(DateTimeUtil.dateToStr(order.getSendTime()))
+                .endTime(DateTimeUtil.dateToStr(order.getEndTime()))
+                .createTime(DateTimeUtil.dateToStr(order.getCreateTime()))
+                .closeTime(DateTimeUtil.dateToStr(order.getCloseTime()))
+                .imageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"))
+                .build();
 
-        orderVo.setPostage(order.getPostage());
-        orderVo.setStatus(order.getStatus());
-        orderVo.setStatusDesc(Const.OrderStatusEnum.codeOf(order.getStatus()).getValue());
-
-        orderVo.setShippingId(order.getShippingId());
         Shipping shipping = shippingMapper.selectByPrimaryKey(order.getShippingId());
         if(shipping != null) {
             orderVo.setReceiverName(shipping.getReceiverName());
             orderVo.setShippingVo(assembleShippingVo(shipping));
         }
-        orderVo.setPaymentTime(DateTimeUtil.dateToStr(order.getPaymentTime()));
-        orderVo.setSendTime(DateTimeUtil.dateToStr(order.getSendTime()));
-        orderVo.setEndTime(DateTimeUtil.dateToStr(order.getEndTime()));
-        orderVo.setCreateTime(DateTimeUtil.dateToStr(order.getCreateTime()));
-        orderVo.setCloseTime(DateTimeUtil.dateToStr(order.getCloseTime()));
-
-        orderVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"));
 
         List<OrderItemVo> orderItemVoList = Lists.newArrayList();
-
         for(OrderItem orderItem : orderItemList) {
             OrderItemVo orderItemVo = assembleOrderItemVo(orderItem);
             orderItemVoList.add(orderItemVo);
@@ -133,29 +133,32 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     private OrderItemVo assembleOrderItemVo(OrderItem orderItem) {
-        OrderItemVo orderItemVo = new OrderItemVo();
-        orderItemVo.setOrderNo(orderItem.getOrderNo());
-        orderItemVo.setProductId(orderItem.getProductId());
-        orderItemVo.setProductName(orderItem.getProductName());
-        orderItemVo.setProductImage(orderItem.getProductImage());
-        orderItemVo.setCurrentUnitPrice(orderItem.getCurrentUnitPrice());
-        orderItemVo.setQuantity(orderItem.getQuantity());
-        orderItemVo.setTotalPrice(orderItem.getTotalPrice());
+        OrderItemVo orderItemVo = OrderItemVo.builder()
+                .orderNo(orderItem.getOrderNo())
+                .productId(orderItem.getProductId())
+                .productName(orderItem.getProductName())
+                .productImage(orderItem.getProductImage())
+                .currentUnitPrice(orderItem.getCurrentUnitPrice())
+                .quantity(orderItem.getQuantity())
+                .totalPrice(orderItem.getTotalPrice())
+                .createTime(DateTimeUtil.dateToStr(orderItem.getCreateTime()))
+                .build();
 
-        orderItemVo.setCreateTime(DateTimeUtil.dateToStr(orderItem.getCreateTime()));
         return orderItemVo;
     }
 
     private ShippingVo assembleShippingVo(Shipping shipping) {
-        ShippingVo shippingVo = new ShippingVo();
-        shippingVo.setReceiverName(shipping.getReceiverName());
-        shippingVo.setReceiverAddress(shipping.getReceiverAddress());
-        shippingVo.setReceiverProvince(shipping.getReceiverProvince());
-        shippingVo.setReceiverCity(shipping.getReceiverCity());
-        shippingVo.setReceiverDistrict(shipping.getReceiverDistrict());
-        shippingVo.setReceiverMobile(shipping.getReceiverMobile());
-        shippingVo.setReceiverZip(shipping.getReceiverZip());
-        shippingVo.setReceiverPhone(shipping.getReceiverPhone());
+        ShippingVo shippingVo = ShippingVo.builder()
+                .receiverName(shipping.getReceiverName())
+                .receiverAddress(shipping.getReceiverAddress())
+                .receiverProvince(shipping.getReceiverProvince())
+                .receiverCity(shipping.getReceiverCity())
+                .receiverDistrict(shipping.getReceiverDistrict())
+                .receiverMobile(shipping.getReceiverMobile())
+                .receiverZip(shipping.getReceiverZip())
+                .receiverPhone(shipping.getReceiverPhone())
+                .build();
+
         return shippingVo;
     }
 
@@ -174,17 +177,17 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     private Order assembleOrder(Integer userId, Integer shippingId, BigDecimal payment) {
-        Order order = new Order();
         long orderNo = this.generateOrderNo();
 
-        order.setOrderNo(orderNo);
-        order.setStatus(Const.OrderStatusEnum.NO_PAY.getCode());
-        order.setPostage(0);
-        order.setPaymentType(Const.PaymentTypeEnum.ONLINE_PAY.getCode());
-        order.setPayment(payment);
-
-        order.setUserId(userId);
-        order.setShippingId(shippingId);
+        Order order = Order.builder()
+                .orderNo(orderNo)
+                .status(Const.OrderStatusEnum.NO_PAY.getCode())
+                .postage(0)
+                .paymentType(Const.PaymentTypeEnum.ONLINE_PAY.getCode())
+                .payment(payment)
+                .userId(userId)
+                .shippingId(shippingId)
+                .build();
         //发货时间等等
         //付款时间等等
         int rowCount = orderMapper.insert(order);
@@ -215,7 +218,6 @@ public class OrderServiceImpl implements IOrderService {
 
         //校验购物车的数据，包括产品的状态和数量
         for(Cart cartItem : cartList) {
-            OrderItem orderItem = new OrderItem();
             Product product = productMapper.selectByPrimaryKey(cartItem.getProductId());
             if(Const.ProductStatusEnum.ON_SALE.getCode() != product.getStatus()) {
                 return ServerResponse.createByErrorMessage("产品" + product.getName() + "不是在线售卖状态");
@@ -226,13 +228,16 @@ public class OrderServiceImpl implements IOrderService {
                 return ServerResponse.createByErrorMessage("产品" + product.getName() + "库存不足");
             }
 
-            orderItem.setUserId(userId);
-            orderItem.setProductId(product.getId());
-            orderItem.setProductName(product.getName());
-            orderItem.setProductImage(product.getMainImage());
-            orderItem.setCurrentUnitPrice(product.getPrice());
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setTotalPrice(BigDecimalUtil.mul(product.getPrice().doubleValue(), cartItem.getQuantity()));
+            OrderItem orderItem = OrderItem.builder()
+                    .userId(userId)
+                    .productId(product.getId())
+                    .productName(product.getName())
+                    .productImage(product.getMainImage())
+                    .currentUnitPrice(product.getPrice())
+                    .quantity(cartItem.getQuantity())
+                    .totalPrice(BigDecimalUtil.mul(product.getPrice().doubleValue(), cartItem.getQuantity()))
+                    .build();
+
             orderItemList.add(orderItem);
         }
         return ServerResponse.createBySuccess(orderItemList);
@@ -246,9 +251,10 @@ public class OrderServiceImpl implements IOrderService {
         if (order.getStatus() != Const.OrderStatusEnum.NO_PAY.getCode()) {
             return ServerResponse.createByErrorMessage("已付款，不能取消改订单");
         }
-        Order updateOrder = new Order();
-        updateOrder.setId(order.getId());
-        updateOrder.setStatus(Const.OrderStatusEnum.CANCELED.getCode());
+        Order updateOrder = Order.builder()
+                .id(order.getId())
+                .status(Const.OrderStatusEnum.CANCELED.getCode())
+                .build();
 
         int rowCount = orderMapper.updateByPrimaryKeySelective(updateOrder);
         if (rowCount > 0) {
@@ -258,7 +264,6 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     public ServerResponse getOrderCartProduct(Integer userId) {
-        OrderProductVo orderProductVo = new OrderProductVo();
         //从购物车中获取数据
 
         List<Cart> cartList = cartMapper.selectCheckedCartByUserId(userId);
@@ -275,9 +280,12 @@ public class OrderServiceImpl implements IOrderService {
             payment = BigDecimalUtil.add(payment.doubleValue(), orderItem.getTotalPrice().doubleValue());
             orderItemVoList.add(assembleOrderItemVo(orderItem));
         }
-        orderProductVo.setProductTotalPrice(payment);
-        orderProductVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"));
-        orderProductVo.setOrderItemVoList(orderItemVoList);
+
+        OrderProductVo orderProductVo = OrderProductVo.builder()
+                .productTotalPrice(payment)
+                .imageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"))
+                .orderItemVoList(orderItemVoList)
+                .build();
 
         return ServerResponse.createBySuccess(orderProductVo);
     }
@@ -398,7 +406,7 @@ public class OrderServiceImpl implements IOrderService {
         AlipayF2FPrecreateResult result = tradeService.tradePrecreate(builder);
         switch (result.getTradeStatus()) {
             case SUCCESS:
-                logger.info("支付宝预下单成功: )");
+                log.info("支付宝预下单成功: )");
 
                 AlipayTradePrecreateResponse response = result.getResponse();
                 dumpResponse(response);
@@ -418,24 +426,24 @@ public class OrderServiceImpl implements IOrderService {
                 try {
                     FTPUtil.uploadFile(Lists.newArrayList(targetFile));
                 } catch (IOException e) {
-                    logger.error("上传二维码异常", e);
+                    log.error("上传二维码异常", e);
                 }
 
-                logger.info("qrPath:" + qrPath);
+                log.info("qrPath:" + qrPath);
                 String qrUrl = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFile.getName();
                 resultMap.put("qrUrl", qrUrl);
                 return ServerResponse.createBySuccess(resultMap);
 
             case FAILED:
-                logger.error("支付宝预下单失败!!!");
+                log.error("支付宝预下单失败!!!");
                 return ServerResponse.createByErrorMessage("支付宝预下单失败!!!");
 
             case UNKNOWN:
-                logger.error("系统异常，预下单状态未知!!!");
+                log.error("系统异常，预下单状态未知!!!");
                 return ServerResponse.createByErrorMessage("系统异常，预下单状态未知!!!");
 
             default:
-                logger .error("不支持的交易状态，交易返回异常!!!");
+                log .error("不支持的交易状态，交易返回异常!!!");
                 return ServerResponse.createByErrorMessage("不支持的交易状态，交易返回异常!!!");
         }
     }
@@ -443,12 +451,12 @@ public class OrderServiceImpl implements IOrderService {
     // 简单打印应答
     private void dumpResponse(AlipayResponse response) {
         if (response != null) {
-            logger.info(String.format("code:%s, msg:%s", response.getCode(), response.getMsg()));
+            log.info(String.format("code:%s, msg:%s", response.getCode(), response.getMsg()));
             if (StringUtils.isNotEmpty(response.getSubCode())) {
-                logger.info(String.format("subCode:%s, subMsg:%s", response.getSubCode(),
+                log.info(String.format("subCode:%s, subMsg:%s", response.getSubCode(),
                         response.getSubMsg()));
             }
-            logger.info("body:" + response.getBody());
+            log.info("body:" + response.getBody());
         }
     }
 

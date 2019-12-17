@@ -44,11 +44,12 @@ public class CartServiceImpl implements ICartService {
         Cart cart = cartMapper.selectCartByUserIdProductId(userId, productId);
         if (cart == null) {
             //这个产品不在购物车中，需要新增一个这个产品的记录
-            Cart cartItem = new Cart();
-            cartItem.setProductId(productId);
-            cartItem.setQuantity(count);
-            cartItem.setChecked(Const.Cart.CHECKED);
-            cartItem.setUserId(userId);
+            Cart cartItem = Cart.builder()
+                    .userId(userId)
+                    .productId(productId)
+                    .quantity(count)
+                    .checked(Const.Cart.CHECKED)
+                    .build();
             cartMapper.insert(cartItem);
         } else {
             //产品已经在购物车中
@@ -102,10 +103,11 @@ public class CartServiceImpl implements ICartService {
 
         if (CollectionUtils.isNotEmpty(cartList)) {
             for (Cart cartItem : cartList) {
-                CartProductVo cartProductVo = new CartProductVo();
-                cartProductVo.setId(cartItem.getId());
-                cartProductVo.setUserId(userId);
-                cartProductVo.setProductId(cartItem.getProductId());
+                CartProductVo cartProductVo = CartProductVo.builder()
+                        .id(cartItem.getId())
+                        .userId(userId)
+                        .productId(cartItem.getProductId())
+                        .build();
 
                 Product product = productMapper.selectByPrimaryKey(cartItem.getProductId());
                 if (product != null) {

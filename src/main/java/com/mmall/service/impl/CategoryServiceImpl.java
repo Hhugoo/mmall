@@ -7,6 +7,9 @@ import com.mmall.common.ServerResponse;
 import com.mmall.dao.CategoryMapper;
 import com.mmall.pojo.Category;
 import com.mmall.service.ICategoryService;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -18,9 +21,9 @@ import java.util.List;
 import java.util.Set;
 
 @Service("iCategoryService")
+@Slf4j
 public class CategoryServiceImpl implements ICategoryService{
 
-    private Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
     @Autowired
     private CategoryMapper categoryMapper;
@@ -29,10 +32,11 @@ public class CategoryServiceImpl implements ICategoryService{
         if (parentId == null || StringUtils.isBlank(categoryName)) {
             return ServerResponse.createByErrorMessage("创建产品参数错误");
         }
-        Category category = new Category();
-        category.setName(categoryName);
-        category.setParentId(parentId);
-        category.setStatus(true);
+        Category category = Category.builder()
+                .name(categoryName)
+                .parentId(parentId)
+                .status(true)
+                .build();
 
         int rowCount = categoryMapper.insert(category);
         if(rowCount > 0) {
@@ -45,9 +49,10 @@ public class CategoryServiceImpl implements ICategoryService{
         if(categoryId == null || StringUtils.isBlank(categoryName)) {
             return ServerResponse.createByErrorMessage("更新产品名字出错");
         }
-        Category category = new Category();
-        category.setId(categoryId);
-        category.setName(categoryName);
+        Category category = Category.builder()
+                .id(categoryId)
+                .name(categoryName)
+                .build();
 
         int rowCount = categoryMapper.updateByPrimaryKeySelective(category);
         if(rowCount > 0) {
@@ -59,7 +64,7 @@ public class CategoryServiceImpl implements ICategoryService{
     public ServerResponse<List<Category>> getChildrenParallelCategory(Integer categoryId) {
         List<Category> categoryList = categoryMapper.selectChildrenCategoryByParentId(categoryId);
         if(CollectionUtils.isEmpty(categoryList)) {
-            logger.info("未找到当前分类的子分类");
+            log.info("未找到当前分类的子分类");
         }
         return ServerResponse.createBySuccess(categoryList);
     }
@@ -68,12 +73,12 @@ public class CategoryServiceImpl implements ICategoryService{
         Set<Category> categorySet = Sets.newHashSet();
         findChildCategory(categorySet, categoryId);
 
-        List<Integer> categoryIdList  = Lists.newArrayList();
-        if(categoryId != null) {
-            for(Category categoryItem : categorySet) {
-                categoryIdList.add(categoryItem.getId());
-            }
-        }
+        List<Integer> categoryIdList  = Optional.of(categorySet)
+                .map(list -> list.stream()
+                        .map(item -> item
+                                .getId())
+                        .collect(Collectors.toList()))
+                .orElse(Lists.newArrayList());
         return ServerResponse.createBySuccess(categoryIdList);
     }
 
