@@ -159,12 +159,13 @@ public class UserServiceImpl implements IUserService{
             return ServerResponse.createByErrorMessage("email已存在，请更新email再尝试更改！");
         }
 
-        User updateUser = new User();
-        updateUser.setId(user.getId());
-        updateUser.setEmail(user.getEmail());
-        updateUser.setPhone(user.getPhone());
-        updateUser.setQuestion(user.getQuestion());
-        updateUser.setAnswer(user.getAnswer());
+        User updateUser = User.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .question(user.getQuestion())
+                .answer(user.getAnswer())
+                .build();
 
         int updateCount = userMapper.updateByPrimaryKeySelective(updateUser);
         if(updateCount > 0) {
@@ -207,12 +208,13 @@ public class UserServiceImpl implements IUserService{
     private List<UserVo> assembleUserVoList(List<User> userList) {
         List<UserVo> userVoList = Lists.newArrayList();
         for(User user : userList) {
-            UserVo userVo = new UserVo();
-            userVo.setId(user.getId());
-            userVo.setUsername(user.getUsername());
-            userVo.setPhone(this.fixPhone(user.getPhone()));
-            userVo.setEmail(user.getEmail());
-            userVo.setCreateTime(DateTimeUtil.dateToStr(user.getCreateTime()));
+            UserVo userVo = UserVo.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .phone(this.fixPhone(user.getPhone()))
+                    .email(user.getEmail())
+                    .createTime(DateTimeUtil.dateToStr(user.getCreateTime()))
+                    .build();
             userVoList.add(userVo);
         }
         return userVoList;
