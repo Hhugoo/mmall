@@ -109,7 +109,7 @@ public class OrderServiceImpl implements IOrderService {
                 .endTime(DateTimeUtil.dateToStr(order.getEndTime()))
                 .createTime(DateTimeUtil.dateToStr(order.getCreateTime()))
                 .closeTime(DateTimeUtil.dateToStr(order.getCloseTime()))
-                .imageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"))
+                .imageHost(PropertiesUtil.getProperty("ftp.server.http.prefix.admin"))
                 .build();
 
         Shipping shipping = shippingMapper.selectByPrimaryKey(order.getShippingId());
